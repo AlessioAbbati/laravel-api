@@ -135,7 +135,7 @@ class ProjectController extends Controller
         if ($request->has('image')) {
             $imagePath = Storage::disk('public')->put('uploads', $data['image']);
             if ($project->image) {
-                Storage::delete($project->imagePath);
+                Storage::delete($project->image);
             }
             $project->image = $imagePath;
         }
