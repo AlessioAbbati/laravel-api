@@ -15,7 +15,7 @@ class ProjectController extends Controller
         // gestione parametro q
         $searchString = $request->query('q', '');
 
-        $project = Project::with('type', 'technologies')->where('title', 'LIKE', "%${searchString}%")->paginate(3);
+        $project = Project::with('type', 'technologies')->where('title', 'LIKE', "%{$searchString}%")->paginate(3);
 
         return response()->json([
             'success' => true,

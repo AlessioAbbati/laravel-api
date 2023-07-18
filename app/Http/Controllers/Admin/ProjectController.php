@@ -56,10 +56,17 @@ class ProjectController extends Controller
         $request->validate($this->validations, $this->validations_messages);
 
         $data = $request->all();
+        // $imagePath = null;
 
         // salvare l'immagine nella cartella degli uploads
         // prendere il percorso della nuova immagine
-        $imagePath = Storage::put('uploads', $data['image']);
+
+        // if(isset($data['image'])) {
+        //     $imagePath = Storage::put('uploads', $data['image']);
+        // }
+
+        
+        
         
         // Salvare i dati nel database
         $newProject = new Project();
@@ -71,7 +78,11 @@ class ProjectController extends Controller
         $newProject->last_update    = $data['last_update'];
         $newProject->collaborators  = $data['collaborators'];
         $newProject->description    = $data['description'];
-        $newProject->image          = $imagePath;
+        if ($request->has('image')) {
+            $imagePath = Storage::put('uploads', $data['image']);
+            $newProject->image          = $imagePath;
+        }
+       
         // $newProject->languages      = $data['languages'];
         $newProject->link_github    = $data['link_github'];
         $newProject->save();
@@ -108,17 +119,25 @@ class ProjectController extends Controller
 
         $data = $request->all();
 
-        if($data['image']) {
-            // salvare l'eventuale nuova immagine
-            $imagePath = Storage::put('uploads', $data['image']);
+        // if($data['image']) {
+        //     // salvare l'eventuale nuova immagine
+        //     $imagePath = Storage::put('uploads', $data['image']);
 
-            if($project->image) {
-                // eliminare la vecchia immagine
+        //     if($project->image) {
+        //         // eliminare la vecchia immagine
+        //         Storage::delete($project->image);
+        //     }
+            
+        //     // aggiorno il valore della nuova immagine
+        //     $project->image  = $imagePath;
+        // }
+
+        if ($request->has('image')) {
+            $image = Storage::disk('public')->put('uploads', $data['image']);
+            if ($project->image) {
                 Storage::delete($project->image);
             }
-            
-            // aggiorno il valore della nuova immagine
-            $project->image  = $imagePath;
+            $project->image = $image;
         }
         
         
