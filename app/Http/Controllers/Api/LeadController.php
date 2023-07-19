@@ -8,9 +8,16 @@ use App\Mail\MailToAdmin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class LeadController extends Controller
 {
+    private $validations = [
+        'name'             => 'required|string|min:5|max:50',
+        'email'            => 'required|email|max:250',
+        'message'          => 'required|string',
+        'newsletter'       => 'required|boolean',
+    ];
     
     public function store(Request $request)
     {
@@ -18,6 +25,16 @@ class LeadController extends Controller
 
         $data = $request->all();
 
+        $validator = Validator::make($data, $this->validations);
+
+        if($validator->fails()) {
+            return response()->json([
+                'success'  => false,
+                'errors'   => $validator->errors(),
+            ]);
+        }
+
+        
         // salvare i dati del lead nel DB
 
         $newLead = new Lead();
